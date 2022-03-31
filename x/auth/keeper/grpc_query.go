@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
+	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -64,6 +65,8 @@ func (ak AccountKeeper) Account(c context.Context, req *types.QueryAccountReques
 	}
 	account := ak.GetAccount(ctx, addr)
 	if account == nil {
+		fmt.Println("here 1")
+		fmt.Println("%+v\n", req)
 		return nil, status.Errorf(codes.NotFound, "account %s not found", req.Address)
 	}
 

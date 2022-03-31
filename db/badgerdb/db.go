@@ -330,6 +330,8 @@ func (tx *badgerTxn) Get(key []byte) ([]byte, error) {
 		return nil, db.ErrKeyEmpty
 	}
 
+	fmt.Println("hi 9")
+
 	item, err := tx.txn.Get(key)
 	if err == badger.ErrKeyNotFound {
 		return nil, nil
@@ -347,6 +349,8 @@ func (tx *badgerTxn) Has(key []byte) (bool, error) {
 	if len(key) == 0 {
 		return false, db.ErrKeyEmpty
 	}
+
+	fmt.Println("hi 10")
 
 	_, err := tx.txn.Get(key)
 	if err != nil && err != badger.ErrKeyNotFound {

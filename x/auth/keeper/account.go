@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -34,8 +35,11 @@ func (ak AccountKeeper) HasAccount(ctx sdk.Context, addr sdk.AccAddress) bool {
 // GetAccount implements AccountKeeperI.
 func (ak AccountKeeper) GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI {
 	store := ctx.KVStore(ak.key)
+	fmt.Printf("here %s does not exist\n", addr)
+
 	bz := store.Get(types.AddressStoreKey(addr))
 	if bz == nil {
+		fmt.Printf("account %s does not exist\n", addr)
 		return nil
 	}
 

@@ -572,11 +572,19 @@ func (app *BaseApp) ApplySnapshotChunk(req abci.RequestApplySnapshotChunk) abci.
 
 func (app *BaseApp) handleQueryGRPC(handler GRPCQueryHandler, req abci.RequestQuery) abci.ResponseQuery {
 	ctx, err := app.createQueryContext(req.Height, req.Prove)
+	fmt.Println("f 2")
+	fmt.Println("%+v", req)
+	fmt.Println("%+v", err)
+
 	if err != nil {
 		return sdkerrors.QueryResult(err, app.trace)
 	}
 
 	res, err := handler(ctx, req)
+	fmt.Println("f 1")
+	fmt.Println("%+v", res)
+	fmt.Println("%+v", err)
+
 	if err != nil {
 		res = sdkerrors.QueryResult(gRPCErrorToSDKError(err), app.trace)
 		res.Height = req.Height
@@ -591,6 +599,9 @@ func gRPCErrorToSDKError(err error) error {
 	if !ok {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
+
+	fmt.Println("hi 13")
+	fmt.Println(err)
 
 	switch status.Code() {
 	case codes.NotFound:

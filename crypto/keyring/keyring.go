@@ -481,25 +481,31 @@ func (ks keystore) KeyByAddress(address sdk.Address) (*Record, error) {
 
 func wrapKeyNotFound(err error, msg string) error {
 	if err == keyring.ErrKeyNotFound {
+		fmt.Println("hi 5")
 		return sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, msg)
 	}
 	return err
 }
 
 func (ks keystore) List() ([]*Record, error) {
-	if _, err := ks.MigrateAll(); err != nil {
-		return nil, err
-	}
+	// if _, err := ks.MigrateAll(); err != nil {
+	// 	return nil, err
+	// }
 
 	keys, err := ks.db.Keys()
 	if err != nil {
 		return nil, err
 	}
 
+	fmt.Println("hi!!!")
+	fmt.Println("key: %+v", keys)
+
 	var res []*Record //nolint:prealloc
 	sort.Strings(keys)
 	for _, key := range keys {
 		if strings.Contains(key, addressSuffix) {
+			continue
+		} else if !strings.Contains(key, infoSuffix) {
 			continue
 		}
 
@@ -509,6 +515,7 @@ func (ks keystore) List() ([]*Record, error) {
 		}
 
 		if len(item.Data) == 0 {
+			fmt.Println("hi 6")
 			return nil, sdkerrors.ErrKeyNotFound.Wrap(key)
 		}
 
@@ -813,6 +820,8 @@ func (ks keystore) writeRecord(k *Record) error {
 // In case of inconsistent keyring, it recovers it automatically.
 func (ks keystore) existsInDb(addr sdk.Address, name string) (bool, error) {
 	_, errAddr := ks.db.Get(addrHexKeyAsString(addr))
+	fmt.Println("hi 7")
+
 	if errAddr != nil && !errors.Is(errAddr, keyring.ErrKeyNotFound) {
 		return false, errAddr
 	}
@@ -868,9 +877,11 @@ func (ks keystore) MigrateAll() (bool, error) {
 		return false, nil
 	}
 
-	var migrated bool
+	var migrated bool = false
 	for _, key := range keys {
 		if strings.Contains(key, addressSuffix) {
+			continue
+		} else if !strings.Contains(key, infoSuffix) {
 			continue
 		}
 
@@ -897,6 +908,8 @@ func (ks keystore) migrate(key string) (*Record, bool, error) {
 	if err != nil {
 		return nil, false, wrapKeyNotFound(err, key)
 	}
+
+	fmt.Println("hi 8")
 
 	if len(item.Data) == 0 {
 		return nil, false, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, key)
