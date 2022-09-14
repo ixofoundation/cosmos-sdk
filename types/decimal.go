@@ -125,12 +125,15 @@ func NewDecFromIntWithPrec(i Int, prec int64) Dec {
 
 // create a decimal from an input decimal string.
 // valid must come in the form:
-//   (-) whole integers (.) decimal integers
+//
+//	(-) whole integers (.) decimal integers
+//
 // examples of acceptable input include:
-//   -123.456
-//   456.7890
-//   345
-//   -456789
+//
+//	-123.456
+//	456.7890
+//	345
+//	-456789
 //
 // NOTE - An error will return if more decimal places
 // are provided in the string than the constant Precision.
@@ -740,14 +743,19 @@ func (d *Dec) Unmarshal(data []byte) error {
 		d.i = new(big.Int)
 	}
 
-	if err := d.i.UnmarshalText(data); err != nil {
+	var text string
+	err := json.Unmarshal(bz, &text)
+	if err != nil {
 		return err
 	}
 
-	if d.i.BitLen() > maxDecBitLen {
-		return fmt.Errorf("decimal out of range; got: %d, max: %d", d.i.BitLen(), maxDecBitLen)
+	// TODO: Reuse dec allocation
+	newDec, err := NewDecFromStr(text)
+	if err != nil {
+		return err
 	}
 
+	d.i = newDec.i
 	return nil
 }
 
